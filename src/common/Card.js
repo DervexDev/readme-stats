@@ -22,7 +22,7 @@ class Card {
   constructor({
     width = 100,
     height = 100,
-    border_radius = 4.5,
+    border_radius = 6,
     colors = {},
     customTitle,
     defaultTitle = "",

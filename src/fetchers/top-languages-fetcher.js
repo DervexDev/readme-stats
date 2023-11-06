@@ -41,6 +41,25 @@ const fetcher = (variables, token) => {
               }
             }
           }
+          organizations(first: 100) {
+            nodes {
+              isOwner: viewerCanAdminister
+              repositories(ownerAffiliations: OWNER, isFork: false, first: 100) {
+                nodes {
+                  name
+                  languages(first: 10, orderBy: {field: SIZE, direction: DESC}) {
+                    edges {
+                      size
+                      node {
+                        color
+                        name
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       }
       `,
@@ -99,6 +118,12 @@ const fetchTopLanguages = async (
 
   let repoNodes = res.data.data.user.repositories.nodes;
   let repoToHide = {};
+
+  res.data.data.user.organizations.nodes.forEach((org) => {
+    if (org.isOwner) {
+      repoNodes.push(...org.repositories.nodes);
+    }
+  });
 
   // populate repoToHide map for quick lookup
   // while filtering out
