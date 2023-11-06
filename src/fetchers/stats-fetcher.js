@@ -20,13 +20,26 @@ const GRAPHQL_REPOS_FIELD = `
     totalCount
     nodes {
       name
-      stargazers {
-        totalCount
-      }
+      stargazerCount
     }
     pageInfo {
       hasNextPage
       endCursor
+    }
+  }
+`;
+
+const GRAPHQL_ORG_REPOS_FIELD = `
+  organizations(first: 100) {
+    nodes {
+      isOwner: viewerCanAdminister
+      repositories(first: 100, ownerAffiliations: OWNER, orderBy: {direction: DESC, field: STARGAZERS}, after: $after) {
+        totalCount
+        nodes {
+          name
+          stargazerCount
+        }
+      }
     }
   }
 `;
@@ -73,6 +86,7 @@ const GRAPHQL_STATS_QUERY = `
         totalCount
       }
       ${GRAPHQL_REPOS_FIELD}
+      ${GRAPHQL_ORG_REPOS_FIELD}
     }
   }
 `;
@@ -142,11 +156,20 @@ const statsFetcher = async ({
       stats.data.data.user.repositories.nodes.push(...repoNodes);
     } else {
       stats = res;
+
+      res.data.data.user.organizations.nodes.forEach((org) => {
+        if (org.isOwner) {
+          stats.data.data.user.repositories.totalCount += org.repositories;
+          stats.data.data.user.repositories.nodes.push(
+            ...org.repositories.nodes,
+          );
+        }
+      });
     }
 
     // Disable multi page fetching on public Vercel instance due to rate limits.
     const repoNodesWithStars = repoNodes.filter(
-      (node) => node.stargazers.totalCount !== 0,
+      (node) => node.stargazerCount !== 0,
     );
     hasNextPage =
       process.env.FETCH_MULTI_PAGE_STARS === "true" &&
@@ -221,7 +244,7 @@ const totalCommitsFetcher = async (username) => {
  */
 const fetchStats = async (
   username,
-  include_all_commits = false,
+  include_all_commits = true,
   exclude_repo = [],
   include_merged_pull_requests = false,
   include_discussions = false,
@@ -240,6 +263,7 @@ const fetchStats = async (
     totalCommits: 0,
     totalIssues: 0,
     totalStars: 0,
+    totalRepos: 0,
     totalDiscussionsStarted: 0,
     totalDiscussionsAnswered: 0,
     contributedTo: 0,
@@ -306,13 +330,12 @@ const fetchStats = async (
   // Retrieve stars while filtering out repositories to be hidden.
   let repoToHide = new Set(exclude_repo);
 
-  stats.totalStars = user.repositories.nodes
-    .filter((data) => {
-      return !repoToHide.has(data.name);
-    })
-    .reduce((prev, curr) => {
-      return prev + curr.stargazers.totalCount;
-    }, 0);
+  user.repositories.nodes.forEach((repo) => {
+    if (!repoToHide.has(repo.name) && repo.stargazerCount != 0) {
+      stats.totalStars += repo.stargazerCount;
+      stats.totalRepos++;
+    }
+  });
 
   stats.rank = calculateRank({
     all_commits: include_all_commits,
@@ -320,7 +343,7 @@ const fetchStats = async (
     prs: stats.totalPRs,
     reviews: stats.totalReviews,
     issues: stats.totalIssues,
-    repos: user.repositories.totalCount,
+    repos: stats.totalRepos,
     stars: stats.totalStars,
     followers: user.followers.totalCount,
   });

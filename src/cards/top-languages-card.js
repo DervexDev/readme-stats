@@ -696,7 +696,7 @@ const noLanguagesDataNode = ({ color, text, layout }) => {
  * @returns {number} Default languages count for input layout.
  */
 const getDefaultLanguagesCountByLayout = ({ layout, hide_progress }) => {
-  if (layout === "compact" || hide_progress === true) {
+  if (!layout || hide_progress === true) {
     return COMPACT_LAYOUT_DEFAULT_LANGS_COUNT;
   } else if (layout === "donut") {
     return DONUT_LAYOUT_DEFAULT_LANGS_COUNT;
@@ -783,7 +783,7 @@ const renderTopLanguages = (topLangs, options = {}) => {
   } else if (layout === "donut-vertical") {
     height = calculateDonutVerticalLayoutHeight(langs.length);
     finalLayout = renderDonutVerticalLayout(langs, totalLanguageSize);
-  } else if (layout === "compact" || hide_progress == true) {
+  } else if (!layout || hide_progress == true) {
     height =
       calculateCompactLayoutHeight(langs.length) + (hide_progress ? -25 : 0);
 

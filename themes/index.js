@@ -1,10 +1,11 @@
 export const themes = {
   default: {
-    title_color: "2f80ed",
-    icon_color: "4c71f2",
-    text_color: "434d58",
-    bg_color: "fffefe",
-    border_color: "e4e2e2",
+    title_color: "e7edf2",
+    icon_color: "477fef",
+    text_color: "7e858f",
+    bg_color: "ffffff00",
+    border_color: "31363c",
+    ring_color: "6cd064",
   },
   default_repocard: {
     title_color: "2f80ed",
