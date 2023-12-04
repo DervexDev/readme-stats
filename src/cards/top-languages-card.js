@@ -12,7 +12,7 @@ import {
 } from "../common/utils.js";
 import { langCardLocales } from "../translations.js";
 
-const DEFAULT_CARD_WIDTH = 300;
+const DEFAULT_CARD_WIDTH = 395;
 const MIN_CARD_WIDTH = 280;
 const DEFAULT_LANG_COLOR = "#858585";
 const CARD_PADDING = 25;
@@ -801,8 +801,13 @@ const renderTopLanguages = (topLangs, options = {}) => {
     finalLayout = renderNormalLayout(langs, width, totalLanguageSize);
   }
 
+  let title;
+  if (!custom_title) {
+    title = "Dervex' Top Languages";
+  }
+
   const card = new Card({
-    customTitle: custom_title,
+    customTitle: title,
     defaultTitle: i18n.t("langcard.title"),
     width,
     height,

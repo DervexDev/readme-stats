@@ -7,6 +7,14 @@ export const themes = {
     border_color: "31363c",
     ring_color: "6cd064",
   },
+  light: {
+    title_color: "202328",
+    icon_color: "2e67d3",
+    text_color: "666d75",
+    bg_color: "ffffff00",
+    border_color: "d1d7dd",
+    ring_color: "69c16e",
+  },
   default_repocard: {
     title_color: "2f80ed",
     icon_color: "586069", // icon color is different
