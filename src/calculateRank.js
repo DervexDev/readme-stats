@@ -34,6 +34,7 @@ function log_normal_cdf(x) {
  * @returns {{level: string, percentile: number}}} The users rank.
  */
 function calculateRank({
+  // eslint-disable-next-line no-unused-vars
   all_commits,
   commits,
   prs,
@@ -58,13 +59,12 @@ function calculateRank({
     FOLLOWERS_WEIGHT = 2;
 
   const TOTAL_WEIGHT =
-    (COMMITS_WEIGHT +
-      PRS_WEIGHT +
-      ISSUES_WEIGHT +
-      REVIEWS_WEIGHT +
-      STARS_WEIGHT +
-      FOLLOWERS_WEIGHT) *
-    0.75;
+    COMMITS_WEIGHT +
+    PRS_WEIGHT +
+    ISSUES_WEIGHT +
+    REVIEWS_WEIGHT +
+    STARS_WEIGHT +
+    FOLLOWERS_WEIGHT;
 
   const THRESHOLDS = [1, 12.5, 25, 37.5, 50, 62.5, 75, 87.5, 100];
   const LEVELS = ["S", "A+", "A", "A-", "B+", "B", "B-", "C+", "C"];
