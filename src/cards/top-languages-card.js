@@ -20,7 +20,7 @@ const COMPACT_LAYOUT_BASE_HEIGHT = 90;
 const MAXIMUM_LANGS_COUNT = 20;
 
 const NORMAL_LAYOUT_DEFAULT_LANGS_COUNT = 5;
-const COMPACT_LAYOUT_DEFAULT_LANGS_COUNT = 6;
+const COMPACT_LAYOUT_DEFAULT_LANGS_COUNT = 8;
 const DONUT_LAYOUT_DEFAULT_LANGS_COUNT = 5;
 const PIE_LAYOUT_DEFAULT_LANGS_COUNT = 6;
 const DONUT_VERTICAL_LAYOUT_DEFAULT_LANGS_COUNT = 6;
@@ -696,7 +696,7 @@ const noLanguagesDataNode = ({ color, text, layout }) => {
  * @returns {number} Default languages count for input layout.
  */
 const getDefaultLanguagesCountByLayout = ({ layout, hide_progress }) => {
-  if (!layout || hide_progress === true) {
+  if (layout === "compact" || hide_progress === true) {
     return COMPACT_LAYOUT_DEFAULT_LANGS_COUNT;
   } else if (layout === "donut") {
     return DONUT_LAYOUT_DEFAULT_LANGS_COUNT;
@@ -731,7 +731,7 @@ const renderTopLanguages = (topLangs, options = {}) => {
     hide,
     hide_progress,
     theme,
-    layout,
+    layout = "compact",
     custom_title,
     locale,
     langs_count = getDefaultLanguagesCountByLayout({ layout, hide_progress }),
@@ -783,7 +783,7 @@ const renderTopLanguages = (topLangs, options = {}) => {
   } else if (layout === "donut-vertical") {
     height = calculateDonutVerticalLayoutHeight(langs.length);
     finalLayout = renderDonutVerticalLayout(langs, totalLanguageSize);
-  } else if (!layout || hide_progress == true) {
+  } else if (layout === "compact" || hide_progress == true) {
     height =
       calculateCompactLayoutHeight(langs.length) + (hide_progress ? -25 : 0);
 
@@ -801,13 +801,8 @@ const renderTopLanguages = (topLangs, options = {}) => {
     finalLayout = renderNormalLayout(langs, width, totalLanguageSize);
   }
 
-  let title;
-  if (!custom_title) {
-    title = "Dervex' Top Languages";
-  }
-
   const card = new Card({
-    customTitle: title,
+    customTitle: custom_title,
     defaultTitle: i18n.t("langcard.title"),
     width,
     height,

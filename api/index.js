@@ -67,6 +67,11 @@ export default async (req, res) => {
 
   try {
     const showStats = parseArray(show);
+
+    if (!showStats.includes("prs_merged")) {
+      showStats.push("prs_merged");
+    }
+
     const stats = await fetchStats(
       username,
       parseBoolean(include_all_commits),

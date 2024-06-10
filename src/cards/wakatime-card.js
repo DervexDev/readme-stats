@@ -3,6 +3,7 @@ import { Card } from "../common/Card.js";
 import { createProgressNode } from "../common/createProgressNode.js";
 import { I18n } from "../common/I18n.js";
 import {
+  chunkArray,
   clampValue,
   flexLayout,
   getCardColors,
@@ -71,25 +72,21 @@ const createCompactLangNode = ({ lang, x, y, display_format }) => {
  *
  * @param {Object} args The function arguments.
  * @param {WakaTimeLang[]} args.langs The language objects.
- * @param {number} args.y The y position of the language node.
  * @param {"time" | "percent"} args.display_format The display format of the language node.
  * @returns {string[]} The language text node items.
  */
-const createLanguageTextNode = ({ langs, y, display_format }) => {
-  return langs.map((lang, index) => {
-    if (index % 2 === 0) {
+const createLanguageTextNode = ({ langs, display_format }) => {
+  const chunked = chunkArray(langs, langs.length / 4);
+
+  return chunked.map((langs, i) => {
+    // @ts-ignore
+    return langs.map((lang, j) => {
       return createCompactLangNode({
         lang,
-        x: 25,
-        y: 12.5 * index + y,
+        x: 25 + 200 * i,
+        y: 25 + 25 * j,
         display_format,
       });
-    }
-    return createCompactLangNode({
-      lang,
-      x: 230,
-      y: 12.5 + 12.5 * index,
-      display_format,
     });
   });
 };
@@ -222,8 +219,8 @@ const renderWakatimeCard = (stats = {}, options = { hide: [] }) => {
     hide_progress,
     custom_title,
     locale,
-    layout,
-    langs_count = languages.length,
+    layout = "compact",
+    langs_count = Math.min(languages.length, 20),
     border_radius,
     border_color,
     display_format = "time",
@@ -278,12 +275,12 @@ const renderWakatimeCard = (stats = {}, options = { hide: [] }) => {
 
   let finalLayout = "";
 
-  let width = 440;
+  let width = 745;
 
   // RENDER COMPACT LAYOUT
   if (layout === "compact") {
     width = width + 50;
-    height = 90 + Math.round(filteredLanguages.length / 2) * 25;
+    height = 90 + Math.round(filteredLanguages.length / 4) * 25;
 
     // progressOffset holds the previous language's width and used to offset the next language
     // so that we can stack them one after another, like this: [--][----][---]
@@ -319,7 +316,6 @@ const renderWakatimeCard = (stats = {}, options = { hide: [] }) => {
       ${
         filteredLanguages.length
           ? createLanguageTextNode({
-              y: 25,
               langs: filteredLanguages,
               display_format,
             }).join("")
@@ -384,7 +380,7 @@ const renderWakatimeCard = (stats = {}, options = { hide: [] }) => {
   const card = new Card({
     customTitle: custom_title,
     defaultTitle: titleText,
-    width: 495,
+    width: 800,
     height,
     border_radius,
     colors: {
