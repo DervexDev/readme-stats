@@ -201,9 +201,10 @@ class Card {
 
   /**
    * @param {string} body The inner body of the card.
+   * @param {boolean} [noPadding] Whether to remove padding or not.
    * @returns {string} The rendered card.
    */
-  render(body) {
+  render(body, noPadding) {
     return `
       <svg
         width="${this.width}"
@@ -259,7 +260,7 @@ class Card {
         <g
           data-testid="main-card-body"
           transform="translate(0, ${
-            this.hideTitle ? this.paddingX : this.paddingY + 20
+            this.hideTitle || noPadding ? this.paddingX : this.paddingY + 20
           })"
         >
           ${body}

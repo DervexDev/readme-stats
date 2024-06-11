@@ -20,9 +20,9 @@ const COMPACT_LAYOUT_BASE_HEIGHT = 90;
 const MAXIMUM_LANGS_COUNT = 20;
 
 const NORMAL_LAYOUT_DEFAULT_LANGS_COUNT = 5;
-const COMPACT_LAYOUT_DEFAULT_LANGS_COUNT = 8;
+const COMPACT_LAYOUT_DEFAULT_LANGS_COUNT = 6;
 const DONUT_LAYOUT_DEFAULT_LANGS_COUNT = 5;
-const PIE_LAYOUT_DEFAULT_LANGS_COUNT = 6;
+const PIE_LAYOUT_DEFAULT_LANGS_COUNT = 8;
 const DONUT_VERTICAL_LAYOUT_DEFAULT_LANGS_COUNT = 6;
 
 /**
@@ -150,7 +150,7 @@ const calculateDonutVerticalLayoutHeight = (totalLangs) => {
  * @returns {number} Card height.
  */
 const calculatePieLayoutHeight = (totalLangs) => {
-  return 300 + Math.round(totalLangs / 2) * 25;
+  return 65 + Math.round(totalLangs / 2) * 25;
 };
 
 /**
@@ -285,8 +285,9 @@ const createLanguageTextNode = ({ langs, totalSize, hideProgress }) => {
   });
 
   const percent = ((longestLang.size / totalSize) * 100).toFixed(2);
-  const minGap = 150;
+  const minGap = 140;
   const maxGap = 20 + measureText(`${longestLang.name} ${percent}%`, 11);
+
   return flexLayout({
     items: layouts,
     gap: maxGap < minGap ? minGap : maxGap,
@@ -481,9 +482,9 @@ const renderDonutVerticalLayout = (langs, totalLanguageSize) => {
  */
 const renderPieLayout = (langs, totalLanguageSize) => {
   // Pie chart radius and center coordinates
-  const radius = 90;
-  const centerX = 150;
-  const centerY = 100;
+  const radius = 50;
+  const centerX = 320;
+  const centerY = 70;
 
   // Start angle for the pie chart parts
   let startAngle = 0;
@@ -554,7 +555,7 @@ const renderPieLayout = (langs, totalLanguageSize) => {
           ${paths.join("")}
         </svg>
       </g>
-      <g transform="translate(0, 220)">
+      <g transform="translate(0, 30)">
         <svg data-testid="lang-names" x="${CARD_PADDING}">
           ${createLanguageTextNode({
             langs,
@@ -731,7 +732,7 @@ const renderTopLanguages = (topLangs, options = {}) => {
     hide,
     hide_progress,
     theme,
-    layout = "compact",
+    layout = "pie",
     custom_title,
     locale,
     langs_count = getDefaultLanguagesCountByLayout({ layout, hide_progress }),
@@ -860,7 +861,7 @@ const renderTopLanguages = (topLangs, options = {}) => {
   );
 
   if (layout === "pie" || layout === "donut-vertical") {
-    return card.render(finalLayout);
+    return card.render(finalLayout, true);
   }
 
   return card.render(`

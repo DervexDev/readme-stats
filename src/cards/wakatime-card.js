@@ -220,7 +220,7 @@ const renderWakatimeCard = (stats = {}, options = { hide: [] }) => {
     custom_title,
     locale,
     layout = "compact",
-    langs_count = Math.min(languages.length, 20),
+    langs_count = Math.min(languages.length, 16),
     border_radius,
     border_color,
     display_format = "time",
