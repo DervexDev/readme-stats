@@ -30,6 +30,9 @@ const fetcher = (variables, token) => {
           repositories(ownerAffiliations: OWNER, isFork: false, first: 100) {
             nodes {
               name
+              owner {
+                login
+              }
               languages(first: 10, orderBy: {field: SIZE, direction: DESC}) {
                 edges {
                   size
@@ -47,6 +50,9 @@ const fetcher = (variables, token) => {
               repositories(ownerAffiliations: OWNER, isFork: false, first: 100) {
                 nodes {
                   name
+                  owner {
+                    login
+                  }
                   languages(first: 10, orderBy: {field: SIZE, direction: DESC}) {
                     edges {
                       size
@@ -80,6 +86,7 @@ const fetcher = (variables, token) => {
  *
  * @param {string} username GitHub username.
  * @param {string[]} exclude_repo List of repositories to exclude.
+ * @param {string[]} exclude_org List of organizations to exclude.
  * @param {number} size_weight Weightage to be given to size.
  * @param {number} count_weight Weightage to be given to count.
  * @returns {Promise<TopLangData>} Top languages data.
@@ -87,6 +94,7 @@ const fetcher = (variables, token) => {
 const fetchTopLanguages = async (
   username,
   exclude_repo = [],
+  exclude_org = [],
   size_weight = 1,
   count_weight = 0,
 ) => {
@@ -118,6 +126,7 @@ const fetchTopLanguages = async (
 
   let repoNodes = res.data.data.user.repositories.nodes;
   let repoToHide = {};
+  let orgToHide = {};
 
   res.data.data.user.organizations.nodes.forEach((org) => {
     if (org.isOwner) {
@@ -133,10 +142,16 @@ const fetchTopLanguages = async (
     });
   }
 
+  if (exclude_org) {
+    exclude_org.forEach((orgName) => {
+      orgToHide[orgName] = true;
+    });
+  }
+
   // filter out repositories to be hidden
   repoNodes = repoNodes
     .sort((a, b) => b.size - a.size)
-    .filter((name) => !repoToHide[name.name]);
+    .filter((name) => !repoToHide[name.name] && !orgToHide[name.owner.login]);
 
   let repoCount = 0;
 

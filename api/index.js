@@ -30,6 +30,7 @@ export default async (req, res) => {
     theme,
     cache_seconds,
     exclude_repo,
+    exclude_org,
     custom_title,
     locale,
     disable_animations,
@@ -70,7 +71,8 @@ export default async (req, res) => {
     const stats = await fetchStats(
       username,
       parseBoolean(include_all_commits),
-      parseArray(exclude_repo),
+      parseArray(exclude_repo).concat(parseArray(process.env.EXCLUDE_REPO)),
+      parseArray(exclude_org).concat(parseArray(process.env.EXCLUDE_ORG)),
       showStats.includes("prs_merged") ||
         showStats.includes("prs_merged_percentage"),
       showStats.includes("discussions_started"),

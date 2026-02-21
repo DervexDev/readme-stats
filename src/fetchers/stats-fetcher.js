@@ -21,6 +21,9 @@ const GRAPHQL_REPOS_FIELD = `
     nodes {
       name
       stargazerCount
+      owner {
+        login
+      }
     }
     pageInfo {
       hasNextPage
@@ -38,6 +41,9 @@ const GRAPHQL_ORG_REPOS_FIELD = `
         nodes {
           name
           stargazerCount
+          owner {
+            login
+          }
         }
       }
     }
@@ -237,6 +243,7 @@ const totalCommitsFetcher = async (username) => {
  * @param {string} username GitHub username.
  * @param {boolean} include_all_commits Include all commits.
  * @param {string[]} exclude_repo Repositories to exclude.
+ * @param {string[]} exclude_org Organizations to exclude.
  * @param {boolean} include_merged_pull_requests Include merged pull requests.
  * @param {boolean} include_discussions Include discussions.
  * @param {boolean} include_discussions_answers Include discussions answers.
@@ -246,6 +253,7 @@ const fetchStats = async (
   username,
   include_all_commits = true,
   exclude_repo = [],
+  exclude_org = [],
   include_merged_pull_requests = false,
   include_discussions = false,
   include_discussions_answers = false,
@@ -329,9 +337,14 @@ const fetchStats = async (
 
   // Retrieve stars while filtering out repositories to be hidden.
   let repoToHide = new Set(exclude_repo);
+  let orgToHide = new Set(exclude_org);
 
   user.repositories.nodes.forEach((repo) => {
-    if (!repoToHide.has(repo.name) && repo.stargazerCount != 0) {
+    if (
+      !repoToHide.has(repo.name) &&
+      !orgToHide.has(repo.owner.login) &&
+      repo.stargazerCount != 0
+    ) {
       stats.totalStars += repo.stargazerCount;
       stats.totalRepos++;
     }

@@ -25,6 +25,7 @@ export default async (req, res) => {
     layout,
     langs_count,
     exclude_repo,
+    exclude_org,
     size_weight,
     count_weight,
     custom_title,
@@ -65,7 +66,8 @@ export default async (req, res) => {
   try {
     const topLangs = await fetchTopLanguages(
       username,
-      parseArray(exclude_repo),
+      parseArray(exclude_repo).concat(parseArray(process.env.EXCLUDE_REPO)),
+      parseArray(exclude_org).concat(parseArray(process.env.EXCLUDE_ORG)),
       size_weight,
       count_weight,
     );
